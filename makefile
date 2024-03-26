@@ -1,8 +1,8 @@
 # Makefile for the demand paging simulation project
 
 TARGET = pagingwithpr
-SOURCES = src/main.cpp src/pagetable.cpp src/page_replacement.cpp src/vaddr_tracereader.cpp src/log_helpers.c
-HEADERS = include/pagetable.h include/page_replacement.h include/vaddr_tracereader.h include/log_helpers.h
+SOURCES = main.cpp pagetable.cpp page_replacement.cpp vaddr_tracereader.cpp log_helpers.c
+HEADERS = pagetable.h page_replacement.h vaddr_tracereader.h log_helpers.h
 
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall -Iinclude
