@@ -1,15 +1,16 @@
-# Makefile for the demand paging simulation project
+# Makefile for the scheduler project
 
 TARGET = pagingwithpr
-SOURCES = main.cpp pagetable.cpp page_replacement.cpp vaddr_tracereader.cpp log_helpers.c
-HEADERS = pagetable.h page_replacement.h vaddr_tracereader.h log_helpers.h
+SOURCES = log_helpers.c main.cpp pagetable.cpp page_replacement.cpp 
+HEADERS = log_helpers.h pagetable.h page_replacement.h 
 
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Iinclude
+CXXFLAGS = -std=c++11 -Wall
 
-$(TARGET): $(SOURCES) $(HEADERS)
-    $(CXX) $(CXXFLAGS) -o $@ $(SOURCES)
+$(TARGET): $(SOURCES)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
 .PHONY: clean
 clean:
-    rm -f $(TARGET)
+	rm -f $(TARGET)
+
