@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <cstdlib>
+#include <numeric>
 #include <iomanip>
 #include "pagetable.h"
 #include "page_replacement.h"
