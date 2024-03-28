@@ -2,8 +2,9 @@
 #include <algorithm> // For std::min_element
 #include <iostream>
 
-PageReplacement::PageReplacement(unsigned int bitstringUpdateInterval) 
-    : currentTime(0), updateInterval(bitstringUpdateInterval) {}
+PageReplacement::PageReplacement(unsigned int bitstringUpdateInterval, unsigned int numFrames) 
+    : currentTime(0), updateInterval(bitstringUpdateInterval), frameCount(numFrames), allocatedFrames(0) {}
+
 
 void PageReplacement::accessPage(unsigned int pageNumber) {
     // Increment access frequency or add new page if it does not exist
@@ -43,4 +44,30 @@ void PageReplacement::agePages() {
     for(auto &page : pages) {
         page.accessFrequency >>= 1; // Right shift to simulate aging
     }
+bool PageReplacement::isFull() const {
+    return allocatedFrames >= frameCount;
+}
+
+unsigned int PageReplacement::allocateFrame(unsigned int vpn) {
+    if (isFull()) {
+        throw std::runtime_error("No free frames available");
+    }
+    // Allocate a new frame
+    allocatedFrames++;
+    return allocatedFrames - 1; // Return the frame number
+}
+
+unsigned int PageReplacement::evictPage() {
+    // Evict a page based on the NFU algorithm with aging
+    if (pages.empty()) {
+        throw std::runtime_error("No pages to evict");
+    }
+    auto victim = std::min_element(pages.begin(), pages.end(), [](const Page &a, const Page &b) {
+        return a.accessFrequency < b.accessFrequency || (a.accessFrequency == b.accessFrequency && a.lastAccessTime < b.lastAccessTime);
+    });
+    unsigned int victimPageNumber = victim->pageNumber;
+    pages.erase(victim);
+    allocatedFrames--; // Assume frame is now free
+    return victimPageNumber;
+
 }
