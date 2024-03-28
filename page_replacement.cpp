@@ -49,13 +49,19 @@ bool PageReplacement::isFull() const {
 }
 
 unsigned int PageReplacement::allocateFrame(unsigned int vpn) {
-    if (isFull()) {
-        throw std::runtime_error("No free frames available");
+    if (!isFull()) {
+        pages.push_back({vpn, allocatedFrames, 1 << 15, currentTime}); // Example initial values
+        return allocatedFrames++;
+    } else {
+        auto evictedVpn = replacePage();
+        // Find and update the evicted page with the new VPN
+        for (auto &page : pages) {
+            if (page.pageNumber == evictedVpn.value()) {
+                page.pageNumber = vpn;
+                return page.frameNumber; // Reuse the frame of the evicted page
+            }
+        }
     }
-    // Allocate a new frame
-    allocatedFrames++;
-    return allocatedFrames - 1; // Return the frame number
-}
 
 unsigned int PageReplacement::evictPage() {
     // Evict a page based on the NFU algorithm with aging
@@ -69,5 +75,4 @@ unsigned int PageReplacement::evictPage() {
     pages.erase(victim);
     allocatedFrames--; // Assume frame is now free
     return victimPageNumber;
-
 }
