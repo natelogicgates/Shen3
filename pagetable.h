@@ -4,29 +4,28 @@
 #include <vector>
 #include <optional>
 
-class PageTableEntry {
-public:
-    bool valid = false;
-    unsigned int frameNumber = 0;
-    PageTableEntry* nextLevel = nullptr; // Points to the next level (if not a leaf node)
-};
-
-class Level {
-public:
-    std::vector<PageTableEntry> entries;
-    Level(int size);
+struct PageTableEntry {
+    std::optional<unsigned int> frameNumber = std::nullopt;
+    PageTableEntry* nextLevel = nullptr;
 };
 
 class PageTable {
 public:
-    PageTable(int levels, int entriesPerLevel);
+    PageTable(const std::vector<int>& bitsPerLevel);
+    ~PageTable();
     bool insert(unsigned int virtualAddress, unsigned int frameNumber);
-    std::optional<unsigned int> search(unsigned int virtualAddress);
+    std::optional<unsigned int> search(unsigned int virtualAddress) const;
     bool remove(unsigned int virtualAddress);
+
 private:
-    std::vector<Level> tableLevels;
-    int entriesPerLevel;
-    unsigned int extractBits(unsigned int value, int startBit, int numBits);
+    PageTableEntry* root;
+    std::vector<int> shiftAmounts;
+    std::vector<unsigned int> masks;
+    int offsetBits;
+
+    PageTableEntry* navigateToEntry(unsigned int virtualAddress, bool createIfMissing) const;
+    void calculateMasksAndShifts(const std::vector<int>& bitsPerLevel);
+    static void deleteSubtree(PageTableEntry* entry);
 };
 
 #endif // PAGETABLE_H
