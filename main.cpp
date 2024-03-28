@@ -2,26 +2,26 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <cstdlib> 
-#include <iomanip> 
-#include "pagetable.h" 
-#include "page_replacement.h" 
+#include <cstdlib>
+#include <iomanip>
+#include "pagetable.h"
+#include "page_replacement.h"
 
 int main(int argc, char* argv[]) {
     std::string traceFilePath;
-    std::vector<int> bitsPerLevel; // To store the number of bits for each level
-    int numFrames = 999999; // Default: simulate an infinite number of frames unless specified
-    int pageSize = 4096; // Default page size in bytes
+    std::vector<int> bitsPerLevel;
+    int numFrames = 999999;
+    int pageSize = 4096;
+    unsigned int bitstringUpdateInterval = 10; // Example value, adjust as needed
     bool traceFileProvided = false;
 
-    // Example of parsing additional arguments
-    for(int i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
-        if(arg == "-f") {
+        if (arg == "-f") {
             numFrames = std::stoi(argv[++i]);
-        } else if(arg == "-p") {
+        } else if (arg == "-p") {
             pageSize = std::stoi(argv[++i]);
-        } else if(std::isdigit(arg[0])) {
+        } else if (std::isdigit(arg[0])) {
             bitsPerLevel.push_back(std::stoi(arg));
         } else {
             traceFilePath = arg;
@@ -34,9 +34,8 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    // Initialize page table and page replacement classes
     PageTable pageTable(bitsPerLevel);
-    PageReplacement pageReplacement(numFrames);
+    PageReplacement pageReplacement(numFrames, bitstringUpdateInterval);
 
     std::ifstream traceFile(traceFilePath);
     if (!traceFile.is_open()) {
