@@ -4,8 +4,8 @@
 #include <vector>
 #include <cstdlib> 
 #include <iomanip> 
-#include "PageTable.h" 
-#include "PageReplacement.h" 
+#include "pagetable.h" 
+#include "page_replacement.h" 
 
 int main(int argc, char* argv[]) {
     std::string traceFilePath;
