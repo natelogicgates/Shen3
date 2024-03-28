@@ -34,8 +34,6 @@ bool PageTable::remove(unsigned int virtualAddress) {
 }
 
 bool PageTable::hasMapping(unsigned int vpn) const {
-    // Assuming a function that converts a virtual address to a VPN
-    // This is a simplification and should be adapted based on your bitsPerLevel logic
     auto virtualAddress = vpn << offsetBits; // Convert VPN back to a virtual address format for searching
     return search(virtualAddress).has_value();
 }
