@@ -32,6 +32,17 @@ bool PageTable::remove(unsigned int virtualAddress) {
     }
     return false;
 }
+bool PageTable::hasMapping(unsigned int vpn) const {
+    return search(vpn).has_value();
+}
+
+void PageTable::addMapping(unsigned int vpn, unsigned int frameNumber) {
+    insert(vpn, frameNumber);
+}
+
+void PageTable::removeMapping(unsigned int vpn) {
+    remove(vpn);
+}
 
 PageTableEntry* PageTable::navigateToEntry(unsigned int virtualAddress, bool createIfMissing) const {
     PageTableEntry* current = root;
