@@ -1,9 +1,17 @@
+#ifndef PAGETABLE_H
+#define PAGETABLE_H
+
 #include <vector>
 #include <optional>
 
 struct PageTableEntry {
     std::optional<unsigned int> frameNumber = std::nullopt;
-    PageTableEntry* nextLevel = nullptr;
+    std::vector<PageTableEntry*> nextLevel;
+    ~PageTableEntry() {
+        for (auto& entry : nextLevel) {
+            delete entry;
+        }
+    }
 };
 
 class PageTable {
@@ -13,9 +21,7 @@ public:
     bool insert(unsigned int virtualAddress, unsigned int frameNumber);
     std::optional<unsigned int> search(unsigned int virtualAddress) const;
     bool remove(unsigned int virtualAddress);
-    bool hasMapping(unsigned int vpn) const; // Check if a VPN is mapped
-    void addMapping(unsigned int vpn, unsigned int frameNumber); // Map VPN to PFN
-    bool removeMapping(unsigned int vpn); // Remove a VPN to PFN mapping
+    void calculateMasksAndShifts(const std::vector<int>& bitsPerLevel);
 
 private:
     PageTableEntry* root;
@@ -24,6 +30,7 @@ private:
     int offsetBits;
 
     PageTableEntry* navigateToEntry(unsigned int virtualAddress, bool createIfMissing) const;
-    void calculateMasksAndShifts(const std::vector<int>& bitsPerLevel);
     static void deleteSubtree(PageTableEntry* entry);
 };
+
+#endif // PAGETABLE_H
