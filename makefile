@@ -1,8 +1,8 @@
 # Makefile for the scheduler project
 
 TARGET = pagingwithpr
-SOURCES = log_helpers.c main.cpp pagetable.cpp page_replacement.cpp vaddr_tracereader.cpp
-HEADERS = log_helpers.h pagetable.h page_replacement.h vaddr_tracereader.h
+SOURCES = log_helpers.c main.cpp pagetable.cpp page_replacement.cpp
+HEADERS = log_helpers.h pagetable.h page_replacement.h
 
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall
