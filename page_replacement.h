@@ -3,12 +3,14 @@
 
 #include <vector>
 #include <optional>
+#include <algorithm> // For std::min_element
 
-struct Page {
+class Page {
+public:
     unsigned int pageNumber;
     unsigned int accessFrequency;
     unsigned long lastAccessTime;
-    Page(unsigned int pageNum) : pageNumber(pageNum), accessFrequency(0), lastAccessTime(0) {}
+    Page(unsigned int pageNum) : pageNumber(pageNum), accessFrequency(1 << 15), lastAccessTime(0) {}
 };
 
 class PageReplacement {
@@ -22,5 +24,4 @@ private:
     unsigned long currentTime;
 };
 
-#endif
-
+#endif // PAGE_REPLACEMENT_H
