@@ -44,7 +44,7 @@ void PageTable::calculateMasksAndShifts(const std::vector<int>& bitsPerLevel) {
 
 PageTableEntry* PageTable::navigateToEntry(unsigned int virtualAddress, bool createIfMissing) const {
     PageTableEntry* current = root;
-    for (int level = 0; level < masks.size(); ++level) {
+    for (size_t level = 0; level < masks.size(); ++level) { // Corrected signed/unsigned mismatch
         unsigned int index = (virtualAddress & masks[level]) >> shiftAmounts[level];
         if (current->nextLevel.size() <= index) {
             if (!createIfMissing) return nullptr;
