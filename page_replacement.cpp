@@ -7,7 +7,7 @@ void PageReplacement::accessPage(unsigned int pageNumber) {
     bool pageFound = false;
     for(auto &page : pages) {
         if(page.pageNumber == pageNumber) {
-            page.accessFrequency++;
+            page.accessFrequency = std::min(page.accessFrequency + 1, (1 << 16) - 1); // Prevent overflow
             page.lastAccessTime = currentTime++;
             pageFound = true;
             break;
@@ -23,7 +23,6 @@ std::optional<unsigned int> PageReplacement::replacePage() {
     if(pages.empty()) {
         return {};
     }
-    // Example: Find the page with the lowest frequency for replacement
     auto victim = std::min_element(pages.begin(), pages.end(), [](const Page &a, const Page &b) {
         return a.accessFrequency < b.accessFrequency || (a.accessFrequency == b.accessFrequency && a.lastAccessTime < b.lastAccessTime);
     });
