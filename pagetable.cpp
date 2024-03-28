@@ -56,13 +56,12 @@ PageTableEntry* PageTable::navigateToEntry(unsigned int virtualAddress, bool cre
         unsigned int index = (virtualAddress & masks[level]) >> shiftAmounts[level];
         if (!current->nextLevel) {
             if (!createIfMissing) return nullptr;
-            current->nextLevel = new PageTableEntry[std::pow(2, masks.size() - level - 1)];
+            current->nextLevel = new PageTableEntry[static_cast<size_t>(std::pow(2, masks.size() - level - 1))];
         }
         current = &current->nextLevel[index];
     }
     return current;
 }
-
 void PageTable::calculateMasksAndShifts(const std::vector<int>& bitsPerLevel) {
     int shiftAmount = offsetBits;
     for (auto bits : bitsPerLevel) {
