@@ -1,30 +1,64 @@
 #include "pagetable.h"
+#include <cmath>
+#include <iostream>
 
-Level::Level(int size) : entries(size) {}
+PageTable::PageTable(const std::vector<int>& bitsPerLevel) : root(new PageTableEntry()), offsetBits(32) {
+    calculateMasksAndShifts(bitsPerLevel);
+}
 
-PageTable::PageTable(int levels, int entriesPerLevel) : entriesPerLevel(entriesPerLevel) {
-    for(int i = 0; i < levels; i++) {
-        tableLevels.emplace_back(Level(entriesPerLevel));
-    }
+PageTable::~PageTable() {
+    deleteSubtree(root);
 }
 
 bool PageTable::insert(unsigned int virtualAddress, unsigned int frameNumber) {
-    // Logic to determine the correct level and index for the virtual address
-    // and set the frame number
-    return true; // Placeholder
+    auto entry = navigateToEntry(virtualAddress, true);
+    if (entry) {
+        entry->frameNumber = frameNumber;
+        return true;
+    }
+    return false;
 }
 
-std::optional<unsigned int> PageTable::search(unsigned int virtualAddress) {
-    // Logic to search for the virtual address in the table
-    // and return the corresponding frame number if found
-    return {}; // Placeholder
+std::optional<unsigned int> PageTable::search(unsigned int virtualAddress) const {
+    auto entry = navigateToEntry(virtualAddress, false);
+    return entry ? entry->frameNumber : std::nullopt;
 }
 
 bool PageTable::remove(unsigned int virtualAddress) {
-    // Logic to remove an entry for the given virtual address
-    return true; // Placeholder
+    auto entry = navigateToEntry(virtualAddress, false);
+    if (entry && entry->frameNumber) {
+        entry->frameNumber = std::nullopt;
+        return true;
+    }
+    return false;
 }
 
-unsigned int PageTable::extractBits(unsigned int value, int startBit, int numBits) {
-    return (value >> startBit) & ((1 << numBits) - 1);
+PageTableEntry* PageTable::navigateToEntry(unsigned int virtualAddress, bool createIfMissing) const {
+    PageTableEntry* current = root;
+    for (int level = 0; level < masks.size(); ++level) {
+        unsigned int index = (virtualAddress & masks[level]) >> shiftAmounts[level];
+        if (!current->nextLevel) {
+            if (!createIfMissing) return nullptr;
+            current->nextLevel = new PageTableEntry[std::pow(2, masks.size() - level - 1)];
+        }
+        current = &current->nextLevel[index];
+    }
+    return current;
+}
+
+void PageTable::calculateMasksAndShifts(const std::vector<int>& bitsPerLevel) {
+    int shiftAmount = offsetBits;
+    for (auto bits : bitsPerLevel) {
+        shiftAmount -= bits;
+        masks.push_back((1 << bits) - 1 << shiftAmount);
+        shiftAmounts.push_back(shiftAmount);
+    }
+}
+
+void PageTable::deleteSubtree(PageTableEntry* entry) {
+    if (!entry) return;
+    if (entry->nextLevel) {
+        delete[] entry->nextLevel;
+    }
+    delete entry;
 }
