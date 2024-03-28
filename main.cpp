@@ -2,10 +2,10 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <cstdlib> // For std::stoi
-#include <iomanip> // For std::setprecision
-#include "PageTable.h" // Include your PageTable class header
-#include "PageReplacement.h" // Include your PageReplacement class header
+#include <cstdlib> 
+#include <iomanip> 
+#include "PageTable.h" 
+#include "PageReplacement.h" 
 
 int main(int argc, char* argv[]) {
     std::string traceFilePath;
