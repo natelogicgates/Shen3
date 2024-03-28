@@ -16,7 +16,7 @@ class PageReplacement {
 public:
     PageReplacement(unsigned int bitstringUpdateInterval);
     void accessPage(unsigned int pageNumber);
-    std::optional<unsigned int> replacePage(); // Returns the page number of the replaced page, if any
+    std::optional<unsigned int> replacePage(); 
     void agePages();
 private:
     std::vector<Page> pages;
