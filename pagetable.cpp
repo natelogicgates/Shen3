@@ -28,4 +28,3 @@ bool PageTable::remove(unsigned int virtualAddress) {
 unsigned int PageTable::extractBits(unsigned int value, int startBit, int numBits) {
     return (value >> startBit) & ((1 << numBits) - 1);
 }
-
