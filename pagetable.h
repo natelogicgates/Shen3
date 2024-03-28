@@ -1,6 +1,3 @@
-#ifndef PAGETABLE_H
-#define PAGETABLE_H
-
 #include <vector>
 #include <optional>
 
@@ -16,6 +13,10 @@ public:
     bool insert(unsigned int virtualAddress, unsigned int frameNumber);
     std::optional<unsigned int> search(unsigned int virtualAddress) const;
     bool remove(unsigned int virtualAddress);
+    // Added methods
+    bool hasMapping(unsigned int vpn) const; // Check if a VPN is mapped
+    void addMapping(unsigned int vpn, unsigned int frameNumber); // Map VPN to PFN
+    bool removeMapping(unsigned int vpn); // Remove a VPN to PFN mapping
 
 private:
     PageTableEntry* root;
@@ -27,5 +28,3 @@ private:
     void calculateMasksAndShifts(const std::vector<int>& bitsPerLevel);
     static void deleteSubtree(PageTableEntry* entry);
 };
-
-#endif // PAGETABLE_H
