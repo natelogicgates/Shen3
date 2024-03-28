@@ -9,15 +9,17 @@ public:
     unsigned int pageNumber;
     unsigned int accessFrequency;
     unsigned long lastAccessTime;
-    Page(unsigned int pageNum) : pageNumber(pageNum), accessFrequency(1 << 15), lastAccessTime(0) {}
+    unsigned int frameNumber; // Assuming each Page has a frameNumber for direct mapping
+    Page(unsigned int pageNum, unsigned int frameNum) 
+        : pageNumber(pageNum), accessFrequency(1 << 15), lastAccessTime(0), frameNumber(frameNum) {}
 };
 
 class PageReplacement {
 public:
     PageReplacement(unsigned int maxFrames, unsigned int bitstringUpdateInterval);
     bool isFull() const;
-    std::optional<unsigned int> replacePage();
-    unsigned int allocateFrame(unsigned int vpn);
+    std::optional<unsigned int> replacePage(); // Returns the frame number of the replaced page
+    unsigned int allocateFrame(unsigned int vpn); // Allocates a frame to a VPN, returns the frame number
     void accessPage(unsigned int pageNumber);
     void agePages();
 
@@ -26,7 +28,7 @@ private:
     unsigned long currentTime;
     unsigned int updateInterval;
     unsigned int maxFrames;
-    unsigned int allocatedFrames; // Added to track the number of allocated frames
+    unsigned int allocatedFrames; // Tracks the number of allocated frames
 };
 
 #endif // PAGE_REPLACEMENT_H
