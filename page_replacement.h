@@ -14,14 +14,21 @@ public:
 
 class PageReplacement {
 public:
-    PageReplacement(unsigned int bitstringUpdateInterval);
+    PageReplacement(unsigned int bitstringUpdateInterval, unsigned int numFrames);
     void accessPage(unsigned int pageNumber);
-    std::optional<unsigned int> replacePage(); 
+    std::optional<unsigned int> replacePage();
     void agePages();
+    bool isFull() const;
+    unsigned int allocateFrame(unsigned int vpn);
+    unsigned int evictPage();
+
 private:
     std::vector<Page> pages;
     unsigned long currentTime;
     unsigned int updateInterval;
+    unsigned int frameCount; // Total number of frames
+    unsigned int allocatedFrames; // Count of allocated frames
+
     void updateAccessHistory();
 };
 
