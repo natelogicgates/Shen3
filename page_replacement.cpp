@@ -45,14 +45,14 @@ void PageReplacement::agePages() {
         page.accessFrequency >>= 1; // Right shift to simulate aging
     }
 bool PageReplacement::isFull() const {
-    return allocatedFrames >= frameCount;
+    return allocatedFrames >= maxFrames;
 }
 
 unsigned int PageReplacement::allocateFrame(unsigned int vpn) {
-    if (!isFull()) {
-        pages.push_back({vpn, allocatedFrames, 1 << 15, currentTime}); // Example initial values
-        return allocatedFrames++;
+    if (isFull()) {
+        throw std::runtime_error("No free frames available");
     } else {
+        allocatedFrames++;
         auto evictedVpn = replacePage();
         // Find and update the evicted page with the new VPN
         for (auto &page : pages) {
@@ -61,10 +61,10 @@ unsigned int PageReplacement::allocateFrame(unsigned int vpn) {
                 return page.frameNumber; // Reuse the frame of the evicted page
             }
         }
+      return allocatedFrames - 1;  
     }
 
 unsigned int PageReplacement::evictPage() {
-    // Evict a page based on the NFU algorithm with aging
     if (pages.empty()) {
         throw std::runtime_error("No pages to evict");
     }
