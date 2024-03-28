@@ -33,48 +33,34 @@ bool PageTable::remove(unsigned int virtualAddress) {
     return false;
 }
 
-bool PageTable::hasMapping(unsigned int vpn) const {
-    auto virtualAddress = vpn << offsetBits; // Convert VPN back to a virtual address format for searching
-    return search(virtualAddress).has_value();
+void PageTable::calculateMasksAndShifts(const std::vector<int>& bitsPerLevel) {
+    int shiftAmount = offsetBits;
+    for (auto bits : bitsPerLevel) {
+        shiftAmount -= bits;
+        masks.push_back((1u << bits) - 1 << shiftAmount);
+        shiftAmounts.push_back(shiftAmount);
+    }
 }
-
-void PageTable::addMapping(unsigned int vpn, unsigned int frameNumber) {
-    // Similar assumption as in hasMapping
-    auto virtualAddress = vpn << offsetBits;
-    insert(virtualAddress, frameNumber);
-}
-
-bool PageTable::removeMapping(unsigned int vpn) {
-    auto virtualAddress = vpn << offsetBits;
-    return remove(virtualAddress);
-}
-
 
 PageTableEntry* PageTable::navigateToEntry(unsigned int virtualAddress, bool createIfMissing) const {
     PageTableEntry* current = root;
     for (int level = 0; level < masks.size(); ++level) {
         unsigned int index = (virtualAddress & masks[level]) >> shiftAmounts[level];
-        if (!current->nextLevel) {
+        if (current->nextLevel.size() <= index) {
             if (!createIfMissing) return nullptr;
-            current->nextLevel = new PageTableEntry[static_cast<size_t>(std::pow(2, masks.size() - level - 1))];
+            current->nextLevel.resize(index + 1, nullptr);
         }
-        current = &current->nextLevel[index];
+        if (!current->nextLevel[index]) {
+            if (!createIfMissing) return nullptr;
+            current->nextLevel[index] = new PageTableEntry();
+        }
+        current = current->nextLevel[index];
     }
     return current;
 }
-void PageTable::calculateMasksAndShifts(const std::vector<int>& bitsPerLevel) {
-    int shiftAmount = offsetBits;
-    for (auto bits : bitsPerLevel) {
-        shiftAmount -= bits;
-        masks.push_back((1 << bits) - 1 << shiftAmount);
-        shiftAmounts.push_back(shiftAmount);
-    }
-}
 
 void PageTable::deleteSubtree(PageTableEntry* entry) {
-    if (!entry) return;
-    if (entry->nextLevel) {
-        delete[] entry->nextLevel;
+    if (entry) {
+        delete entry;
     }
-    delete entry;
 }
