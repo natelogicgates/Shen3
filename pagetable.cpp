@@ -32,17 +32,25 @@ bool PageTable::remove(unsigned int virtualAddress) {
     }
     return false;
 }
+
 bool PageTable::hasMapping(unsigned int vpn) const {
-    return search(vpn).has_value();
+    // Assuming a function that converts a virtual address to a VPN
+    // This is a simplification and should be adapted based on your bitsPerLevel logic
+    auto virtualAddress = vpn << offsetBits; // Convert VPN back to a virtual address format for searching
+    return search(virtualAddress).has_value();
 }
 
 void PageTable::addMapping(unsigned int vpn, unsigned int frameNumber) {
-    insert(vpn, frameNumber);
+    // Similar assumption as in hasMapping
+    auto virtualAddress = vpn << offsetBits;
+    insert(virtualAddress, frameNumber);
 }
 
-void PageTable::removeMapping(unsigned int vpn) {
-    remove(vpn);
+bool PageTable::removeMapping(unsigned int vpn) {
+    auto virtualAddress = vpn << offsetBits;
+    return remove(virtualAddress);
 }
+
 
 PageTableEntry* PageTable::navigateToEntry(unsigned int virtualAddress, bool createIfMissing) const {
     PageTableEntry* current = root;
