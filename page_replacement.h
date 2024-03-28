@@ -1,6 +1,4 @@
-#ifndef PAGE_REPLACEMENT_H
-#define PAGE_REPLACEMENT_H
-
+// In page_replacement.h
 #include <vector>
 #include <optional>
 
@@ -9,27 +7,22 @@ public:
     unsigned int pageNumber;
     unsigned int accessFrequency;
     unsigned long lastAccessTime;
-    Page(unsigned int pageNum) : pageNumber(pageNum), accessFrequency(1 << 15), lastAccessTime(0) {}
+    Page(unsigned int pageNum);
 };
 
 class PageReplacement {
 public:
-    PageReplacement(unsigned int bitstringUpdateInterval, unsigned int numFrames);
-    void accessPage(unsigned int pageNumber);
-    std::optional<unsigned int> replacePage();
-    void agePages();
-    bool isFull() const;
-    unsigned int allocateFrame(unsigned int vpn);
-    unsigned int evictPage();
+    PageReplacement(unsigned int maxFrames, unsigned int bitstringUpdateInterval);
+    bool isFull() const; // Check if the frame list is full
+    std::optional<unsigned int> replacePage(); // Choose a page to replace
+    unsigned int allocateFrame(unsigned int vpn); // Allocate a frame for a VPN
+    void accessPage(unsigned int pageNumber); // Mark a page as accessed
+    void agePages(); // Age the pages for the replacement algorithm
 
 private:
     std::vector<Page> pages;
     unsigned long currentTime;
     unsigned int updateInterval;
-    unsigned int frameCount; // Total number of frames
-    unsigned int allocatedFrames; // Count of allocated frames
-
+    unsigned int maxFrames; // Maximum number of frames
     void updateAccessHistory();
 };
-
-#endif // PAGE_REPLACEMENT_H
