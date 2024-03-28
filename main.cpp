@@ -4,7 +4,6 @@
 #include <vector>
 #include <cstdlib>
 #include <numeric>
-#include <iomanip>
 #include "pagetable.h"
 #include "page_replacement.h"
 
@@ -15,18 +14,36 @@ int main(int argc, char* argv[]) {
     unsigned int bitstringUpdateInterval = 10; // Default aging interval
     bool traceFileProvided = false;
 
+    // Additional variables for argument validation
+    int numberOfMemoryAccesses = -1; // -1 indicates not set
+
     // Parse command line arguments
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
-        if (arg == "-f") {
-            numFrames = std::stoi(argv[++i]);
-        } else if (arg == "-b") {
-            bitstringUpdateInterval = std::stoi(argv[++i]);
-        } else if (std::isdigit(arg[0])) {
-            bitsPerLevel.push_back(std::stoi(arg));
-        } else {
-            traceFilePath = arg;
-            traceFileProvided = true;
+        try {
+            if (arg == "-f") {
+                numFrames = std::stoi(argv[++i]);
+                if (numFrames <= 0) throw std::invalid_argument("Number of available frames must be a number and greater than 0");
+            } else if (arg == "-b") {
+                bitstringUpdateInterval = std::stoi(argv[++i]);
+                if (bitstringUpdateInterval <= 0) throw std::invalid_argument("Bit string update interval must be a number and greater than 0");
+            } else if (arg == "-n") {
+                numberOfMemoryAccesses = std::stoi(argv[++i]);
+                if (numberOfMemoryAccesses <= 0) throw std::invalid_argument("Number of memory accesses must be a number and greater than 0");
+            } else if (std::isdigit(arg[0])) {
+                int bits = std::stoi(arg);
+                if (bits <= 0) {
+                    std::cerr << "Level " << bitsPerLevel.size() << " page table must have at least 1 bit.\n";
+                    return -1;
+                }
+                bitsPerLevel.push_back(bits);
+            } else {
+                traceFilePath = arg;
+                traceFileProvided = true;
+            }
+        } catch (const std::invalid_argument& e) {
+            std::cerr << e.what() << "\n";
+            return -1;
         }
     }
 
@@ -35,6 +52,11 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
+    if (std::accumulate(bitsPerLevel.begin(), bitsPerLevel.end(), 0) > 32) {
+        std::cerr << "Too many bits used for the page table\n";
+        return -1;
+    }
+    
     PageTable pageTable(bitsPerLevel);
     PageReplacement pageReplacement(numFrames, bitstringUpdateInterval);
 
