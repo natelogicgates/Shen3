@@ -37,7 +37,7 @@ void PageTable::calculateMasksAndShifts(const std::vector<int>& bitsPerLevel) {
     int shiftAmount = offsetBits;
     for (auto bits : bitsPerLevel) {
         shiftAmount -= bits;
-        masks.push_back(((1u << bits) - 1 << shiftAmount);
+        masks.push_back(((1u << bits) - 1) << shiftAmount);
         shiftAmounts.push_back(shiftAmount);
     }
 }
