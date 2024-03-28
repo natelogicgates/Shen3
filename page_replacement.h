@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <optional>
-#include <algorithm> // For std::min_element
 
 class Page {
 public:
@@ -15,13 +14,15 @@ public:
 
 class PageReplacement {
 public:
-    PageReplacement();
+    PageReplacement(unsigned int bitstringUpdateInterval);
     void accessPage(unsigned int pageNumber);
     std::optional<unsigned int> replacePage(); // Returns the page number of the replaced page, if any
     void agePages();
 private:
     std::vector<Page> pages;
     unsigned long currentTime;
+    unsigned int updateInterval;
+    void updateAccessHistory();
 };
 
 #endif // PAGE_REPLACEMENT_H
