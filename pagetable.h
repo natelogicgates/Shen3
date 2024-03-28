@@ -8,6 +8,7 @@ class PageTableEntry {
 public:
     bool valid = false;
     unsigned int frameNumber = 0;
+    PageTableEntry* nextLevel = nullptr; // Points to the next level (if not a leaf node)
 };
 
 class Level {
@@ -28,5 +29,4 @@ private:
     unsigned int extractBits(unsigned int value, int startBit, int numBits);
 };
 
-#endif
-
+#endif // PAGETABLE_H
